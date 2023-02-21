@@ -1,7 +1,6 @@
 {
     "version": "2.0.0",
     "tasks": [
-        // OTHER
         {
             "label": "checkforsettings",
             "type": "shell",
@@ -10,7 +9,6 @@
             "command": "bash -c ${workspaceFolder}/.vscode/config.sh",
             "problemMatcher": []
         },
-        // BUILD
         {
             "label": "pnpmsetup",
             "type": "shell",
@@ -47,7 +45,6 @@
             ],
             "problemMatcher": []
         },
-        // DEPLOY
         {
             "label": "createfolders",
             "detail": "Create plugins folder in expected directory",
@@ -98,7 +95,6 @@
             ],
             "problemMatcher": []
         },
-        // ALL-IN-ONE
         {
             "label": "allinone",
             "detail": "Build and deploy",
@@ -107,10 +103,17 @@
             "dependsOn": [
                 "buildall",
                 "deployall"
-                // Uncomment this line if you'd like your python code reloaded after deployment (this will restart Steam)
-                // ,"restartloader"
             ],
             "problemMatcher": []
+        },
+        {
+            "type": "typescript",
+            "tsconfig": "backend/tsconfig.json",
+            "problemMatcher": [
+                "$tsc"
+            ],
+            "group": "build",
+            "label": "tsc: 构建 - backend/tsconfig.json",
         }
     ]
 }

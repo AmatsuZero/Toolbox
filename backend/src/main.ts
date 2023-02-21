@@ -1,14 +1,15 @@
-import express from 'express';
+import express, { Express, Request, Response } from 'express';
+import dotenv from 'dotenv';
 
-const app = express();
+dotenv.config();
 
-app.get('/', function (req, res) {
-    res.send('Hello World');
-})
+const app: Express = express();
+const port = process.env.PORT ? process.env.PORT : 8081;
 
-const server = app.listen(8081, () => {
-    const host = server?.address();
-    const port = server?.address();
+app.get('/', (req: Request, res: Response) => {
+  res.send('Express + TypeScript Server');
+});
 
-    console.log("应用实例，访问地址为 http://%s:%s", host, port);
+app.listen(port, () => {
+  console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
 });
