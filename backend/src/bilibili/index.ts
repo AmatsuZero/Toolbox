@@ -1,0 +1,1 @@
+export { GetPopularData } from './rank';
