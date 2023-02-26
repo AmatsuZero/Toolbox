@@ -13,4 +13,4 @@ export interface BaseResponse {
     code: number;
     message: string;
     ttl: number | null;
-};
+}

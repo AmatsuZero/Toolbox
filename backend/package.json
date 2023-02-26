@@ -1,8 +1,8 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "backend for toolbox",
+  "main": "out/main.js",
   "scripts": {
     "debug": "nodemon"
   },

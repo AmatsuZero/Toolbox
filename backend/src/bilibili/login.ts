@@ -57,7 +57,7 @@ const getStatus = async (qrcode_key: string) => {
 
 const page = (img: string) => `
 <!DOCTYPE html>
-<html>
+<html lang="ch">
     <head>
         <meta charset="UTF-8">
         <title>扫码登陆</title>
@@ -74,7 +74,7 @@ const page = (img: string) => `
     <body>
         <div class="box">
             <h1>使用哔哩哔哩手机客户端扫码登陆</h1>
-            <img src=${img}>
+            <img src=${img} alt="qrcode">
         </div>
     </body>
 </html>
