@@ -38,12 +38,19 @@ export const SaveCookie = async (cookies: string[]) => {
     }
 }
 
-export const checkCookies = async (callback: string, res: Response) => {
-    const cookies = await cookieJar.getCookies(BASE_URL);
-    if (cookies.length > 0) {
-        return true;
+export const checkCookies = async (req: Request, res: Response, next: NextFunction) => {
+    if (req.path === '/login'
+        || req.path === 'b/login'
+        || req.path === '/checkStatus'
+        || req.path === 'b/checkStatus') {
+        next();
+        return;
     }
 
-    res.redirect(`/b/login?callback=${callback}`);
-    return false;
+    const cookies = await cookieJar.getCookies(BASE_URL);
+    if (cookies.length > 0) {
+        next();
+        return;
+    }
+    res.redirect(`/b/login?callback=${req.originalUrl}`);
 };
