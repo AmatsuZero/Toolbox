@@ -1,11 +1,11 @@
 import axios from 'axios';
 import {NextFunction, Request, Response} from "express";
-import {Cookie, CookieJar, defaultPath} from 'tough-cookie';
+import {Cookie, CookieJar } from 'tough-cookie';
 import { wrapper } from 'axios-cookiejar-support';
 import { FileCookieStore } from 'tough-cookie-file-store';
-import { join, resolve } from 'path';
+import { join } from 'path';
+import { __dirname } from '../global';
 
-const __dirname = resolve();
 const cookiePath = join(__dirname, "cookie.json");
 const BASE_URL = "https://api.bilibili.com";
 export const cookieJar = new CookieJar(new FileCookieStore(cookiePath));
