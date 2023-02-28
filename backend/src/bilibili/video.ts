@@ -1,4 +1,7 @@
 /// 版权
+import {NextFunction, Request, Response} from "express";
+import {BilibiliResponse, bilibili} from "./base";
+
 export enum VideoCopyRight {
     /// 原创
     Original = 1,
@@ -150,7 +153,7 @@ export interface VideoInfoData {
     videos: number;
     tid: number;
     tname: string;
-    copyright: number;
+    copyright: VideoCopyRight;
     pic: string;
     title: string;
     pubdate: number;
@@ -182,4 +185,108 @@ export interface VideoInfoData {
     user_garb: VideoUserGarb;
     honor_reply: VideoHonorReply;
     like_icon: string;
+}
+
+interface SegmentBase {
+    initialization: string;
+    index_range: string;
+}
+
+interface DashMediaInfo {
+    id: number;
+    baseUrl: string;
+    base_url: string;
+    backupUrl: string[];
+    backup_url: string[];
+    bandwidth: number;
+    mimeType: string;
+    mime_type: string;
+    codecs: string;
+    width: number;
+    height: number;
+    frameRate: string;
+    frame_rate: string;
+    sar: string;
+    startWithSap: number;
+    start_with_sap: number;
+    SegmentBase: SegmentBase;
+    segment_base: SegmentBase;
+    codecid: number;
+}
+
+export interface VideoURLData {
+    from: string;
+    result: number;
+    quality: number;
+    format: string;
+    timelength: number;
+    accept_format: string;
+    accept_description: string[];
+    accept_quality: number[];
+    video_codecid: number;
+    seek_param: string;
+    seek_type: string;
+    dash: {
+        duration: number;
+        minBufferTime: number;
+        min_buffer_time: number;
+        video: DashMediaInfo[];
+        audio: DashMediaInfo[];
+        dolby: {
+            type: number;
+            audio: DashMediaInfo[];
+        };
+        flac: {
+            display: boolean;
+            audio: DashMediaInfo;
+        }
+    } | null;
+    durl: {
+        order: number;
+        length: number;
+        size: number;
+        ahead: string;
+        vhead: string;
+        url: string;
+        backup_url: string[];
+    }[];
+    high_format: null;
+    last_play_time: number;
+    last_play_cid: number;
+    support_formats: {
+        quality: number;
+        format: string;
+        new_description: string;
+        display_desc: string;
+        superscript: string;
+        codecs: string[];
+    }[];
+}
+
+export const GetVideoInfoData = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const response = await bilibili.get<BilibiliResponse<VideoInfoData>>('/web-interface/view', {
+            params: req.query
+        });
+
+        res.status(response.status)
+            .header(response.headers)
+            .send(response.data);
+    } catch (e) {
+        next(e);
+    }
+}
+
+export const GetVideoUrl = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const response = await bilibili.get<BilibiliResponse<VideoURLData>>('/player/playurl', {
+            params: req.query
+        });
+
+        res.status(response.status)
+            .header(response.headers)
+            .send(response.data);
+    } catch (e) {
+        next(e);
+    }
 }

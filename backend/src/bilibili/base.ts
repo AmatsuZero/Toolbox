@@ -11,17 +11,18 @@ const BASE_URL = "https://api.bilibili.com";
 export const cookieJar = new CookieJar(new FileCookieStore(cookiePath));
 
 export const bilibili = wrapper(axios.create({
-    baseURL: 'https://api.bilibili.com/x/web-interface',
+    baseURL: 'https://api.bilibili.com/x',
     timeout: 1000,
     method: 'get',
     withCredentials: true,
     jar: cookieJar
 }));
 
-export interface BaseResponse {
+export interface BilibiliResponse<T> {
     code: number;
     message: string;
     ttl: number | null;
+    data: T
 }
 
 export const SaveCookie = async (cookies: string[]) => {

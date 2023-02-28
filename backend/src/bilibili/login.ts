@@ -1,26 +1,22 @@
 import axios from 'axios';
 import QRCode from 'qrcode';
 import { NextFunction, Request, Response } from 'express';
-import {BaseResponse, SaveCookie} from './base';
+import {BilibiliResponse, SaveCookie} from './base';
 
 let pollTimer: NodeJS.Timer | null = null;
-let pollInfo: PollStatusResponse | null = null;
+let pollInfo: PollStatusResponseData | null = null;
 
-interface GenerateQRcodeResponse extends BaseResponse {
-    data: {
-        url: string;
-        qrcode_key: string;
-    }
+interface GenerateQRcodeResponseData {
+    url: string;
+    qrcode_key: string;
 }
 
-interface PollStatusResponse extends BaseResponse {
-    data: {
-        url: string;
-        refresh_token: string;
-        timestamp: string;
-        code: number;
-        message: string;
-    }
+interface PollStatusResponseData {
+    url: string;
+    refresh_token: string;
+    timestamp: string;
+    code: number;
+    message: string;
 }
 
 const loginClient = axios.create({
@@ -35,16 +31,16 @@ const stopPoll = () => {
 }
 
 const getQRCode = () => loginClient
-.get<GenerateQRcodeResponse>('/x/passport-login/web/qrcode/generate');
+.get<BilibiliResponse<GenerateQRcodeResponseData>>('/x/passport-login/web/qrcode/generate');
 
 const getStatus = async (qrcode_key: string) => {
     const url = '/x/passport-login/web/qrcode/poll';
-    const response = await loginClient.get<PollStatusResponse>(url, {
+    const response = await loginClient.get<BilibiliResponse<PollStatusResponseData>>(url, {
         params: { qrcode_key }
     });
 
     const code = response.data.data.code;
-    pollInfo = response.data;
+    pollInfo = response.data.data;
     switch (code) {
     case 86101:
     case 86090:
@@ -158,5 +154,5 @@ export const CheckShouldJump = async (req: Request, res: Response, next: NextFun
         res.send({code: 86101, message: "未扫码"});
         return;
     }
-    res.send(pollInfo.data);
+    res.send(pollInfo);
 }

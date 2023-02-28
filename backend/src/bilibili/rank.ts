@@ -1,14 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
-import {bilibili, BaseResponse, cookieJar, checkCookies} from './base';
+import {bilibili, BilibiliResponse} from './base';
 import { VideoInfoData } from './video';
 
 export interface PopularData {
     list: VideoInfoData;
     no_more: boolean;
-}
-
-export interface PopularInfo extends BaseResponse {
-    data: PopularData;
 }
 
 export const GetPopularData = async (req: Request, res: Response, next: NextFunction) => {
@@ -17,7 +13,7 @@ export const GetPopularData = async (req: Request, res: Response, next: NextFunc
     const ps = params.ps || '20';
 
     try {
-        const response = await bilibili.get<PopularData>('/popular', {
+        const response = await bilibili.get<BilibiliResponse<PopularData>>('/web-interface/popular', {
             params: { pn, ps }
         });
 
@@ -27,5 +23,4 @@ export const GetPopularData = async (req: Request, res: Response, next: NextFunc
     } catch (e) {
         next(e);
     }
-  
 }
