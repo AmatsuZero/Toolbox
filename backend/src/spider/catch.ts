@@ -1,5 +1,26 @@
-import puppeteer from "puppeteer";
+import puppeteer, {Browser} from "puppeteer";
 import {NextFunction, Request, Response} from "express";
+
+const launchOptions = (proxyServer: string) => {
+    const args = [
+        '--blink-settings=imagesEnabled=false',
+        '--no-sandbox',
+        '--disable-setuid-sandbox'
+    ];
+
+    if (proxyServer.length > 0) {
+        args.push( `--proxy-server=${proxyServer}`);
+    }
+
+    return {
+        headless: true,
+        ignoreDefaultArgs: [
+            "--hide-scrollbars",
+            "--mute-audio",
+        ],
+        args,
+    }
+}
 
 export class VideoInfo {
     title = '';
@@ -11,33 +32,52 @@ export class VideoInfo {
     watch = 0;
     collect = 0;
     score = -1;
+    browser: Browser | null | undefined;
+    proxyServer: string;
 
-    toString() {
-        return `Video Info: (${this.score} ${this.vDurat})${this.title} ${this.viewKey} ${this.watch} ${this.collect} ${this.upTime} ${this.dlAddr}`;
+    constructor(proxyServer: string) {
+        this.proxyServer = proxyServer;
     }
 
-    async updateDlAddr(proxyServer: string) {
-        this.dlAddr = "";
-        const browser = await puppeteer.launch({
-            headless: true,
-            ignoreDefaultArgs: [
-                "--hide-scrollbars",
-                "--mute-audio",
-            ],
-            args: [
-                '--blink-settings=imagesEnabled=false',
-                `--proxy-server=${proxyServer}`,
-                '--no-sandbox',
-                '--disable-setuid-sandbox'
-            ],
-        });
+    async init() {
+        this.browser = await puppeteer.launch(
+            launchOptions(this.proxyServer)
+        );
+    }
 
-        const page = await browser.newPage();
+    toString() {
+        return `Video Info:
+         score: ${this.score} 
+         duration: ${this.vDurat}
+         title: ${this.title} 
+         view key: ${this.viewKey} 
+         watch: ${this.watch} 
+         collection: ${this.collect} 
+         update time: ${this.upTime} 
+         addr: ${this.dlAddr}`;
+    }
+
+    async createPage(timeout: number = 10) {
+        if (!this.browser) {
+            throw new Error("should call init first!");
+        }
+
+        const page = await this.browser.newPage();
         await page.setExtraHTTPHeaders({
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
             "Accept-Language": "zh-CN,zh;q=0.9"
         });
-        page.setDefaultTimeout(10 * 1000);
+        page.setDefaultTimeout(timeout * 1000);
+
+        return page;
+    }
+
+    async updateDlAddr() {
+        if (!this.browser) {
+            throw new Error("should call init first!");
+        }
+
+        const page = await this.createPage();
 
         const fullUrl = `https://www.91porn.com/view_video.php?viewkey=${this.viewKey}`;
         const response = await page.goto(fullUrl, {waitUntil: 'domcontentloaded'});
@@ -54,13 +94,29 @@ export class VideoInfo {
             console.log(fullUrl, "DlAddr done!");
 
             const html = node.toString();
-            html.match(/<source src="[?s:(.*?)]" type="/);
+            const exp = /<source [^>]*src=['"]([^'"]+)[^>]* type=>/gi;
+            const array = html.match(exp);
+            if (array !== null && array.length > 0) {
+                this.dlAddr = array[0] || '';
+            }
         } catch (e) {
             console.error("DlAddr: ", fullUrl, e);
         }
     }
 }
 
-export const GetWeekly = async (req: Request, res: Response, next: NextFunction) => {
+export const PageCrawlOne = async (req: Request, res: Response, next: NextFunction) => {
+    const proxyServer = req.query['proxyServer'] as string|| '';
+    const vi = new VideoInfo(proxyServer);
+    const dstUrl = req.query['dstUrl'] as string || '';
+    try {
+        await vi.init();
+        const page = await vi.createPage(25);
+    } catch (e) {
+        console.log(req.originalUrl, e);
+    }
+}
+
+export const PageCrawl = () => {
 
 }
