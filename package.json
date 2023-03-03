@@ -41,6 +41,8 @@
   },
   "dependencies": {
     "decky-frontend-lib": "^3.18.10",
+    "nodejieba": "^2.6.0",
+    "puppeteer": "^19.7.2",
     "qrcode": "^1.5.1",
     "react-icons": "^4.4.0"
   },
