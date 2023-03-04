@@ -57,7 +57,7 @@ export default class Score {
         words.forEach(w => this.keyValue.set(w, titleScore));
         let duraScore = 10.8 * info.vDurat;
         duraScore = duraScore > 100 ? 100 : duraScore;
-        let ownScore = this.ownValue[info.owner];
+        let ownScore = this.ownValue.get(info.owner) || 0;
         return 0.4 * titleScore + 0.4 * duraScore + 0.2 * ownScore;
     }
 

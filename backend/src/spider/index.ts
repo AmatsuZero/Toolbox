@@ -1,5 +1,16 @@
 import express from 'express';
 
-const Browser = express.Router();
+const Spider = express.Router();
 
-Browser.use('/91', )
+Spider.use('/now', async (req, res, next) => {
+
+});
+
+Spider.use('/page', async (req, res, next) => {
+
+});
+
+
+Spider.use('week', async (req, res, next) => {
+
+});
