@@ -1,6 +1,5 @@
 import puppeteer, {Browser, Page} from "puppeteer";
 import * as cheerio from 'cheerio';
-import {children} from "cheerio/lib/api/traversing";
 
 const launchOptions = (proxyServer: string | null) => {
     const args = [
@@ -154,6 +153,7 @@ export const PageCrawlOne = async (dstUrl: string, proxyServer: string) => {
         return vi;
     } catch (e) {
         console.log(dstUrl, e);
+        return null;
     }
 }
 
@@ -175,20 +175,21 @@ export const PageCrawlChromeDp = async (dstUrl: string, proxyServer: string) => 
         const $ = cheerio.load(html);
         const d = $("#wrapper > div.container.container-minheight > div.row > div > div > div > div");
         d.each(() => {
-            const textStr = $(this).text();
-            const title = $(this).find("a").find("span.video-title").text();
-            const videoUrl = $(this).find("a").attr("href") || '';
-
-            const viewKey = videoUrl.match(/viewkey=['"]([^'"]+)[^>]*&page/gi);
-            const addTime = textStr.match(/添加时间:['"]([^'"]+)[^>]*\n/gi);
-            const watch = textStr.match(/热度:['"]([^'"]+)[^>]*\n/gi);
-            const collect = textStr.match(/收藏:(?s:(.*?))\n/gi);
+            // const textStr = $(this).text();
+            // const title = $(this).find("a").find("span.video-title").text();
+            // const videoUrl = $(this).find("a").attr("href") || '';
+            //
+            // const viewKey = videoUrl.match(/viewkey=['"]([^'"]+)[^>]*&page/gi);
+            // const addTime = textStr.match(/添加时间:['"]([^'"]+)[^>]*\n/gi);
+            // const watch = textStr.match(/热度:['"]([^'"]+)[^>]*\n/gi);
+            // const collect = textStr.match(/收藏:(?s:(.*?))\n/gi);
         });
         const all = new Array<VideoInfo>();
 
         return all;
     } catch (e) {
         console.error("Crawl done", dstUrl, e);
+        return [];
     }
 }
 

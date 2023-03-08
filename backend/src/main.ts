@@ -2,6 +2,7 @@ import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import { Bilibili } from "./bilibili";
 import akaneko from "akaneko";
+import {InitDB} from "./config/db";
 
 dotenv.config();
 const app: Express = express();
@@ -25,6 +26,7 @@ app.get('/', async (req: Request, res: Response) => {
 });
 
 const port = process.env.PORT || 8081;
-app.listen(port, () => {
+app.listen(port, async () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
+  await InitDB();
 });
