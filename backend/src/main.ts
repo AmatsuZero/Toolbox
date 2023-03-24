@@ -1,8 +1,9 @@
 import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import { Bilibili } from "./bilibili";
-import akaneko from "akaneko";
 import {InitDB} from "./config/db";
+import {AliNetDisk} from "./netdisk/service";
+import akaneko from "akaneko";
 
 dotenv.config();
 const app: Express = express();
@@ -24,6 +25,7 @@ app.get('/', async (req: Request, res: Response) => {
 </html>
   `)
 });
+app.use('/ali', AliNetDisk);
 
 const port = process.env.PORT || 8081;
 app.listen(port, async () => {

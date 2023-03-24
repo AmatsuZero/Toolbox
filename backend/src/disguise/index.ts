@@ -5,7 +5,7 @@ import { createWriteStream } from 'fs';
 import { join } from "path";
 import { tmpdir } from "os";
 import Axios from "axios";
-import akaneko, {nsfw} from "akaneko";
+import akaneko from "akaneko";
 
 const finished = promisify(stream.finished);
 
@@ -14,9 +14,10 @@ const getDisguisePicture = async (output: string) => {
     await downloadFile(url, output);
 }
 
+const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
 const generateID = (length: number) => {
     let result = '';
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     const charactersLength = characters.length;
     let counter = 0;
     while (counter < length) {

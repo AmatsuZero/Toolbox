@@ -1,7 +1,7 @@
 import axios from 'axios';
-import QRCode from 'qrcode';
 import { NextFunction, Request, Response } from 'express';
 import {BilibiliResponse, SaveCookie} from './base';
+import {QRLoginPage} from "../utils/qr";
 
 let pollTimer: NodeJS.Timer | null = null;
 let pollInfo: PollStatusResponseData | null = null;
@@ -59,60 +59,39 @@ const getStatus = async (qrcode_key: string) => {
     }
 }
 
-const page = (img: string, cb: string) => `
-<!DOCTYPE html>
-<html lang="ch">
-    <head>
-        <meta charset="UTF-8">
-        <title>扫码登陆</title>
-        <style>
-            .box {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                flex-direction: column;
-                height: 100vh;
-            }
-        </style>
-        <script>
-            let nIntervalId;
+const script = (cb: string) => `
+<script>
+    let nIntervalId;
+    
+    async function successHandler() {
+      const dst = '${cb}';
+      if (dst.length > 0) {
+         window.location = dst;   
+      }
+      
+      await fetch('b/checkStatus?done=1');
+        clearInterval(nIntervalId);
+        document.getElementById("title").textContent = "登陆成功，即将关闭";
+      }
             
-            async function successHandler() {
-                const dst = '${cb}';
-                if (dst.length > 0) {
-                    window.location = dst;   
-                }
-                await fetch('b/checkStatus?done=1');
-                clearInterval(nIntervalId);
-                document.getElementById("title").textContent = "登陆成功，即将关闭";
-            }
-            
-            async function check() {// 检查是否可以关闭登陆页面
-                const response = await fetch('/b/checkStatus');
-                const data = await response.json();
-                console.log(data);
+      async function check() {// 检查是否可以关闭登陆页面
+        const response = await fetch('/b/checkStatus');
+        const data = await response.json();
+        console.log(data);
                 
-                const code = data['code'];
-                if (code === 0) {
-                    await successHandler();
-                } else if (code === 86038) {
-                    document.getElementById("title").textContent = "已超时，请刷新";
-                    clearInterval(nIntervalId);
-                } 
-            }
+        const code = data['code'];
+        if (code === 0) {
+            await successHandler();
+        } else if (code === 86038) {
+            document.getElementById("title").textContent = "已超时，请刷新";
+            clearInterval(nIntervalId);
+        } 
+    }
             
-            window.onload = () => {
-                nIntervalId = setInterval(check, 500);
-            }
-        </script>
-    </head>
-    <body>
-        <div class="box">
-            <h1 id="title">使用哔哩哔哩手机客户端扫码登陆</h1>
-            <img src=${img} alt="qrcode">
-        </div>
-    </body>
-</html>
+   window.onload = () => {
+        nIntervalId = setInterval(check, 500);
+   }
+</script>
 `
 
 export const Login = async (req: Request, res: Response, next: NextFunction) => {
@@ -127,9 +106,8 @@ export const Login = async (req: Request, res: Response, next: NextFunction) => 
         const { url, qrcode_key } = response.data.data;
         const cb = req.query["callback"] as string || "";
 
-        const img = await QRCode.toDataURL(url);
-        res.type('text/html');
-        res.send(page(img, cb));
+        const page = await QRLoginPage(url, script(cb), "使用哔哩哔哩手机客户端扫码登陆");
+        await page(req, res, next);
 
         // 检查登陆状态
         if (pollTimer !== null) {

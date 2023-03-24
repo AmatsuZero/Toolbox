@@ -15,6 +15,8 @@ ItemTarget.init({
 
 export class Item extends Model {}
 
+Item.hasOne(ItemTarget);
+
 Item.init({
     target: {
         type: DataTypes.INTEGER,
@@ -23,13 +25,27 @@ Item.init({
             key: 'id',
         }
     }
-}, { sequelize })
+}, {
+    sequelize,
+    modelName: 'Zhihu-Item'
+})
 
-export type Question = {
-    title: string;
-    url: string;
-};
+export class Question extends Model {}
 
-export type HotList = {
-    data: Item[];
-};
+Question.init({
+    title: {
+        type: DataTypes.STRING,
+    },
+    url: {
+        type: DataTypes.STRING,
+    }
+}, {
+    sequelize,
+    modelName: 'Zhihu-Question'
+})
+
+export class HotList extends Model {
+    // data: Item[];
+}
+
+HotList.hasMany(Item);
