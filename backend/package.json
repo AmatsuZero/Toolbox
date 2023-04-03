@@ -4,7 +4,8 @@
   "description": "backend for toolbox",
   "main": "out/main.js",
   "scripts": {
-    "debug": "nodemon"
+    "debug": "nodemon",
+    "lora-install": "node scripts/stableFusionPrepare.mjs"
   },
   "keywords": [],
   "author": "",

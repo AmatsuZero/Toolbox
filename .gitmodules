@@ -1,0 +1,6 @@
+[submodule "backend/stableDifusionWebUI"]
+	path = backend/stableDifusionWebUI
+	url = git@github.com:AUTOMATIC1111/stable-diffusion-webui.git
+[submodule "backend/trainingModels/sd-vae-ft-mse-original"]
+	path = backend/trainingModels/sd-vae-ft-mse-original
+	url = https://huggingface.co/stabilityai/sd-vae-ft-mse-original
