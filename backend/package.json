@@ -5,7 +5,8 @@
   "main": "out/main.js",
   "scripts": {
     "debug": "nodemon",
-    "lora-install": "node scripts/stableFusionPrepare.mjs"
+    "lora-install": "node scripts/stableFusionPrepare.mjs",
+    "lora-start": "node scripts/run.mjs"
   },
   "keywords": [],
   "author": "",

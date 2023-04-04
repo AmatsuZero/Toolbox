@@ -1,31 +1,38 @@
-//  参考：https://www.cnblogs.com/cheflone/p/17157938.html
+/*参考：
+    https://www.cnblogs.com/cheflone/p/17157938.html
+    https://github.com/civitai/civitai/wiki/How-to-use-models
+*/
 
 import path from "path";
 import fs from "fs";
-import { fileURLToPath } from 'url';
-import { exec } from "child_process";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const shellCmd = (cmd) => {
-    return new Promise((resolve, reject) => {
-       exec(cmd, function (error, stdout, stderr) {
-          if (error !== null) {
-              reject(error);
-          } else if (typeof(stderr) !== "string") {
-              reject(new Error(stderr));
-          } else {
-              resolve(stdout);
-          }
-       });
-    });
-}
+import {shellCmd, walk, __dirname, stableFusionDir} from "./utils.mjs";
 
 // 检查是否已经克隆项目
-const stableFusionDir = path.join(__dirname, "..", "stableDifusionWebUI");
 if (!fs.existsSync(stableFusionDir)) {
-    await shellCmd("git submodule update --init");
+    console.info("Start to pull sub modules");
+    const info = await shellCmd("git submodule update --init");
+    console.info("clone submodule completed", info);
 }
 
-// 建立 sd-vae-ft-mse-original 软连接
+const ignoreFiles = new Set([".md", ".gitattributes", ".git"]);
+
+// 软链 sd-vae-ft-mse-original 到 models/Vae 目录下
+let target = path.join(stableFusionDir, "models", "Vae");
+const vaeSrc = path.join(__dirname, "..", "trainingModels", "sd-vae-ft-mse-original");
+if (fs.existsSync(target)) {
+    for await (const p of walk(vaeSrc)) {
+        const name = path.basename(p)
+        const ext = path.extname(name);
+        if (ignoreFiles.has(ext) || ignoreFiles.has(name)) {
+            continue;
+        }
+        if (fs.existsSync(p)) {
+            console.info(`Soft link has been created: ${p}`);
+            continue;
+        }
+        fs.symlinkSync(p, path.join(target, name));
+    }
+}
+
+// 软链 models 到 models/Stable-diffusion 目录下
+target = path.join(stableFusionDir, "models", "Stable-diffusion");
