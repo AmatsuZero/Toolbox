@@ -26,13 +26,11 @@ if (fs.existsSync(target)) {
         if (ignoreFiles.has(ext) || ignoreFiles.has(name)) {
             continue;
         }
-        if (fs.existsSync(p)) {
+        const link = path.join(target, name);
+        if (fs.existsSync(link)) {
             console.info(`Soft link has been created: ${p}`);
             continue;
         }
-        fs.symlinkSync(p, path.join(target, name));
+        fs.symlinkSync(p, link);
     }
 }
-
-// 软链 models 到 models/Stable-diffusion 目录下
-target = path.join(stableFusionDir, "models", "Stable-diffusion");
