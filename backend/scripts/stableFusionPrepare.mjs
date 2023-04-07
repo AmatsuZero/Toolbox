@@ -5,7 +5,8 @@
 
 import path from "path";
 import fs from "fs";
-import {shellCmd, walk, __dirname, stableFusionDir} from "./utils.mjs";
+import {shellCmd, walk, __dirname, stableFusionDir, venvPath} from "./utils.mjs";
+import {spawn} from "child_process";
 
 // 检查是否已经克隆项目
 if (!fs.existsSync(stableFusionDir)) {
@@ -34,3 +35,19 @@ if (fs.existsSync(target)) {
         fs.symlinkSync(p, link);
     }
 }
+
+console.info("prepare to install xformers...");
+// 安装 xformers
+if (process.platform === "darwin") {
+    spawn("sh", [
+        path.join(__dirname, "install_xformers.sh"),
+        path.join(venvPath, "bin", "activate")
+    ], {
+        shell: true,
+        stdio: "inherit",
+        cwd: path.join(__dirname, "..", "xformers")
+    });
+
+    console.info("xformers has been installed");
+}
+

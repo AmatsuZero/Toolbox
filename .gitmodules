@@ -4,3 +4,6 @@
 [submodule "backend/trainingModels/sd-vae-ft-mse-original"]
 	path = backend/trainingModels/sd-vae-ft-mse-original
 	url = https://huggingface.co/stabilityai/sd-vae-ft-mse-original
+[submodule "backend/xformers"]
+	path = backend/xformers
+	url = git@github.com:facebookresearch/xformers.git

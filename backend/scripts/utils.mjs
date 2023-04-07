@@ -8,6 +8,15 @@ export const __dirname = path.dirname(__filename);
 
 export const stableFusionDir = path.join(__dirname, "..", "stableDiffusionWebUI");
 
+export const installDir = path.join(__dirname, "..");
+// venv 路径
+let _venvPath = path.join(installDir, "..", "venv");
+if (!fs.existsSync(_venvPath)) {
+    _venvPath = path.join(installDir, "venv");
+}
+
+export const venvPath = _venvPath;
+
 export const shellCmd = (cmd) => {
     return new Promise((resolve, reject) => {
         exec(cmd, function (error, stdout, stderr) {
