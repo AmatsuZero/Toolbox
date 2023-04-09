@@ -47,7 +47,5 @@ if (process.platform === "darwin") {
         stdio: "inherit",
         cwd: path.join(__dirname, "..", "xformers")
     });
-
-    console.info("xformers has been installed");
 }
 

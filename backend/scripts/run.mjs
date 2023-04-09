@@ -9,6 +9,7 @@ process.env["LAUNCH_SCRIPT"] = path.join(stableFusionDir, "launch.py");
 // 检测 cuda 是否可用
 const rawInfo = await shellCmd(`source ${path.join(venvPath, "bin", "activate")} && python3 ${path.join(__dirname, "detect_GPU.py")}`);
 const gpuInfo = JSON.parse(rawInfo);
+const args = ["--no-half-vae", "--xformers", "--precision full", "--no-half"];
 
 if (!gpuInfo["isCUDAAvailable"]) {
     args.push("--skip-torch-cuda-test");
@@ -19,7 +20,6 @@ if (gpuInfo["isMPSAvailable"]) { // MPS: Metal Performance Shaders
     process.env["PYTORCH_MPS_HIGH_WATERMARK_RATIO"] = "0.0"; // MPS 内存分配取消限制
 }
 
-const args = ["--no-half-vae", "--xformers", "--precision full", "--no-half"];
 process.env["COMMANDLINE_ARGS"] = args.join(" ");
 
 if (process.platform === "win32") {
