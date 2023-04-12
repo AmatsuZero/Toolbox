@@ -1,5 +1,5 @@
 import tempfile
-from typing import Optional, Tuple
+from typing import Optional
 import typer
 from aligo import Aligo
 from pathlib import Path

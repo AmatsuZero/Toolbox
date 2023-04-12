@@ -41,7 +41,6 @@ export const shell = (cmd: string, ...args: any[]) => {
 export const createProgram = (...args: any[]) => {
     if (process.env["VIRTUAL_ENV"] === undefined) {
         process.env["VIRTUAL_ENV"] = _venvPath;
-        process.env["PATH"] = `${_venvPath}/bin:$PATH`
     }
     return shell("python", ...args);
 }

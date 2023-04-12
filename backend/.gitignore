@@ -1,2 +1,5 @@
 .idea
 venv
+.env.backend
+/LLaMa_Input
+/LLaMa_Output
