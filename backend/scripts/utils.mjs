@@ -10,9 +10,15 @@ export const stableFusionDir = path.join(__dirname, "..", "stableDiffusionWebUI"
 
 export const installDir = path.join(__dirname, "..");
 // venv 路径
-let _venvPath = path.join(installDir, "..", "venv");
+let _venvPath = path.join(installDir, "..");
 if (!fs.existsSync(_venvPath)) {
-    _venvPath = path.join(installDir, "venv");
+    _venvPath = path.join(_venvPath, "..");
+}
+
+if (process.env["BACKEND_ENV"] === "llama") {
+    _venvPath = path.join(_venvPath, "venv_llama");
+} else {
+    _venvPath = path.join(_venvPath, "venv");
 }
 
 export const venvPath = _venvPath;

@@ -1,18 +1,17 @@
-import express, { Express, Request, Response } from 'express';
+import express, {Express, NextFunction, Request, Response} from 'express';
 import dotenv from 'dotenv';
 import { Bilibili } from "./bilibili";
 import {InitDB} from "./config/db";
 import {AliNetDisk} from "./netdisk/service";
-import akaneko from "akaneko";
 
 dotenv.config();
 const app: Express = express();
 
 app.use('/b', Bilibili);
-app.get('/', async (req: Request, res: Response) => {
-  const img = await akaneko.nsfw.gifs();
-  res.type('text/html');
-  res.send(`
+app.get('/', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    res.type('text/html');
+    res.send(`
   <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -20,10 +19,13 @@ app.get('/', async (req: Request, res: Response) => {
     <title>Title</title>
     </head>
     <body>
-        <img src="${img}" alt="img">
+        <img src="https://pic.re/image" alt="img">
     </body>
 </html>
   `)
+  } catch (e) {
+      next(e);
+  }
 });
 app.use('/ali', AliNetDisk);
 

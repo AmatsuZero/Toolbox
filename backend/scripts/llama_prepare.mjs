@@ -1,6 +1,7 @@
 import { spawn } from "child_process";
 import path from "path";
-import { __dirname, shellCmd, venvPath } from "./utils.mjs";
+import fs from "fs";
+import {__dirname, installDir, shellCmd, venvPath} from "./utils.mjs";
 
 const getPythonDir = async (program) => {
     const ver = await shellCmd(`${program} --version`);
@@ -24,11 +25,19 @@ const shell = (cmd, args) => new Promise((resolve, reject) => {
 });
 
 try {
+
+// 检查环境是否已经创建
+    if (!fs.existsSync(path.join(venvPath))) {
+        const dir = path.basename(venvPath);
+        await shellCmd(`python3 -m venv ${dir}`);
+    }
+
     const activatePath = path.join(venvPath, "bin", "activate");
     console.info('开始安装依赖库...');
     await shell("sh", [
         path.join(__dirname, "prepare_llama.sh"),
-        activatePath
+        activatePath,
+        path.join(installDir, "..", "requirements.txt")
     ]);
 
     console.info("依赖安装完成，下载 LLaMA 模型...");
@@ -38,8 +47,8 @@ try {
     console.info('下载完成，准备将原版 LLaMA 模型转换为 HF 格式...');
 
     await shell(pythonProgram, [
-        path.join(venvPath, "lib", pythonVersion, "site-packages", "transformers", 
-        "models", "llama", "convert_llama_weights_to_hf.py"), 
+        path.join(venvPath, "lib", pythonVersion, "site-packages", "transformers",
+        "models", "llama", "convert_llama_weights_to_hf.py"),
         "--input_dir", path.join(__dirname, "path_to_original_llama_root_dir"),
         "--model_size", "7B",
         "--output_dir", path.join(__dirname, "path_to_original_llama_hf_dir"),

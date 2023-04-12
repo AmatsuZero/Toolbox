@@ -4,8 +4,7 @@ import * as fs from "fs";
 import { promisify } from "util";
 import {ifFileExists} from "../utils/utils";
 import {NextFunction, Request, Response} from "express";
-import {__dirname} from "../global";
-import {createProgram} from "./program";
+import {cli} from "./program";
 import {QRLoginPage} from "../utils/qr";
 
 const readFile = promisify(fs.readFile);
@@ -49,9 +48,8 @@ const scriptFunc = (cb: string) => `
 
 export const Login = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const prog = path.join(__dirname, "aliyunpan", "login.py");
         const cb = req.query["callback"] as string || "";
-        const tmpFile = path.join(tmpdir(), `qr-${new Date()}.png`);
+        const tmpFile = '/Users/samzhjiang/Downloads/test.txt';
         const interval = setInterval(async () => {
             const isExist = await ifFileExists(tmpFile);
             if (!isExist) {
@@ -62,7 +60,7 @@ export const Login = async (req: Request, res: Response, next: NextFunction) => 
             const page = await QRLoginPage(imgURL, scriptFunc(cb), "使用阿里云盘手机客户端扫码登陆");
             await page(req, res, next);
         }, 500);
-        const chunks = await createProgram(prog, tmpFile);
+        const chunks = await cli("login", "-p", tmpFile);
 
     } catch (e) {
         next(e);

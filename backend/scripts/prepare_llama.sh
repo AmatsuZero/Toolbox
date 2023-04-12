@@ -8,5 +8,5 @@ pip install git+https://github.com/huggingface/transformers
 pip install sentencepiece
 pip install peft
 
-# 通过云盘下载模型
-pip install -U aligo
+# 安装云盘依赖
+pip install -r "$2"
