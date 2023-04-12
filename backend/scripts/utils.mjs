@@ -17,6 +17,8 @@ if (!fs.existsSync(_venvPath)) {
 
 if (process.env["BACKEND_ENV"] === "llama") {
     _venvPath = path.join(_venvPath, "venv_llama");
+} else if (process.env["BACKEND_ENV"] === "sd") {
+    _venvPath = path.join(_venvPath, "venv_sd");
 } else {
     _venvPath = path.join(_venvPath, "venv");
 }
