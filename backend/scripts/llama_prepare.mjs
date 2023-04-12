@@ -1,7 +1,12 @@
 import { spawn } from "child_process";
 import path from "path";
 import fs from "fs";
+import dotenv from "dotenv";
 import {__dirname, installDir, shellCmd, venvPath} from "./utils.mjs";
+
+dotenv.config({ // 加载配置
+    path: path.join(installDir, ".env.backend")
+});
 
 const getPythonDir = async (program) => {
     const ver = await shellCmd(`${program} --version`);
@@ -13,6 +18,7 @@ const shell = (cmd, args) => new Promise((resolve, reject) => {
     const ch = spawn(cmd, args, {
         shell: true,
         stdio: "inherit",
+        cwd: path.join(venvPath, "..")
     });
 
     ch.on('error', (err) => {
@@ -25,33 +31,47 @@ const shell = (cmd, args) => new Promise((resolve, reject) => {
 });
 
 try {
-
-// 检查环境是否已经创建
+    // 检查环境是否已经创建
     if (!fs.existsSync(path.join(venvPath))) {
         const dir = path.basename(venvPath);
         await shellCmd(`python3 -m venv ${dir}`);
     }
 
-    const activatePath = path.join(venvPath, "bin", "activate");
+    if (process.env["VIRTUAL_ENV"] === undefined) { // 模拟 source path/to/activate
+        process.env["VIRTUAL_ENV"] = venvPath;
+        process.env["PATH"] = `${venvPath}/bin:$PATH`
+    }
+
     console.info('开始安装依赖库...');
     await shell("sh", [
         path.join(__dirname, "prepare_llama.sh"),
-        activatePath,
         path.join(installDir, "..", "requirements.txt")
     ]);
 
     console.info("依赖安装完成，下载 LLaMA 模型...");
+    const folderId = process.env["LLAMA_FOLDER_ID"];
+    if (folderId === undefined || folderId === 'to replace') {
+        console.error("未能找到文件夹 id");
+        return;
+    }
+
+    const downloadDst = path.join(installDir, "LLaMa_Input");
+    await shell("python", [
+        "-m", "aliyunpan", "retrieve-dir",
+        "--id", "",
+        "--dst", downloadDst
+    ]);
 
     const pythonProgram = path.join(venvPath, "bin", "python");
     const pythonVersion = await getPythonDir(pythonProgram);
-    console.info('下载完成，准备将原版 LLaMA 模型转换为 HF 格式...');
+    console.info('LLaMA 模型下载完成，准备将原版 LLaMA 模型转换为 HF 格式...');
 
     await shell(pythonProgram, [
         path.join(venvPath, "lib", pythonVersion, "site-packages", "transformers",
         "models", "llama", "convert_llama_weights_to_hf.py"),
-        "--input_dir", path.join(__dirname, "path_to_original_llama_root_dir"),
+        "--input_dir", downloadDst,
         "--model_size", "7B",
-        "--output_dir", path.join(__dirname, "path_to_original_llama_hf_dir"),
+        "--output_dir", path.join(__dirname, "LLaMa_Output"),
     ]);
 } catch (e) {
     console.error(e);

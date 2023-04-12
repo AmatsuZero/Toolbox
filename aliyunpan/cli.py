@@ -1,9 +1,9 @@
 import tempfile
-from typing import Optional
+from typing import Optional, Tuple
 import typer
 from aligo import Aligo
 from pathlib import Path
-from aliyunpan import ERRORS, __app_name__, __version__, config, database
+from aliyunpan import ERRORS, __app_name__, __version__, config, database, download
 
 app = typer.Typer()
 
@@ -16,6 +16,7 @@ def login(file_path: str = typer.Option(
     prompt="链接保存地址?"),
 ) -> None:
     """通过二维码登陆阿里云盘"""
+
     def show(qr_link: str):
         text_file = open(file_path, "w")
         text_file.write(qr_link)
@@ -56,6 +57,20 @@ def _version_callback(value: bool) -> None:
     if value:
         typer.echo(f"{__app_name__} v{__version__}")
         raise typer.Exit()
+
+
+@app.command()
+def retrieve_dir(folder_id: str = typer.Option(
+    None,
+    "--id",
+    "-i",
+    prompt="文件夹 id ?"), dst: str = typer.Option(
+    None,
+    "--dst",
+    "-d",
+    prompt="下载路径")) -> None:
+    """下载文件夹"""
+    download.download_dir(folder_id, dst)
 
 
 @app.callback()
