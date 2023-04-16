@@ -7,7 +7,8 @@
     "debug": "nodemon",
     "lora-install": "BACKEND_ENV=sd node scripts/stableFusionPrepare.mjs",
     "lora-start": "BACKEND_ENV=sd node scripts/run.mjs",
-    "llama-install": "BACKEND_ENV=llama node scripts/llama_prepare.mjs"
+    "llama-install": "BACKEND_ENV=llama node scripts/llama_prepare.mjs",
+    "llama-install_windows": "set BACKEND_ENV=llama node scripts/llama_prepare.mjs"
   },
   "keywords": [],
   "author": "",

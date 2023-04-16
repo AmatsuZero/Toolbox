@@ -51,17 +51,21 @@ try {
     ]);
 
     console.info("依赖安装完成，下载 LLaMA 模型...");
-    const folderId = process.env["LLAMA_FOLDER_ID"];
-    if (folderId === undefined || folderId === 'to replace') {
-        throw new Error("未能找到文件夹 id");
-    }
 
-    const downloadDst = path.join(installDir, "LLaMa_Input");
-    await shell("python", [
-        "-m", "aliyunpan", "retrieve-dir",
-        "--id", folderId,
-        "--dst", downloadDst
-    ]);
+    const downloadDst = path.join(installDir, "LLaMa_Input", "LLaMa");
+    if (fs.existsSync(downloadDst)) {
+        console.info("LLaMa 模型已经下载完毕");
+    } else {
+        const folderId = process.env["LLAMA_FOLDER_ID"];
+        if (folderId === undefined || folderId === 'to replace') {
+            throw new Error("未能找到文件夹 id");
+        }
+        await shell("python", [
+            "-m", "aliyunpan", "retrieve-dir",
+            "--id", folderId,
+            "--dst", downloadDst
+        ]);
+    }
 
     const pythonProgram = path.join(venvPath, "bin", "python");
     const pythonVersion = await getPythonDir(pythonProgram);
@@ -70,7 +74,7 @@ try {
     await shell(pythonProgram, [
         path.join(venvPath, "lib", pythonVersion, "site-packages", "transformers",
         "models", "llama", "convert_llama_weights_to_hf.py"),
-        "--input_dir", path.join(downloadDst, "LLaMa"),
+        "--input_dir", downloadDst,
         "--model_size", "7B",
         "--output_dir", path.join(__dirname, "LLaMa_Output"),
     ]);
