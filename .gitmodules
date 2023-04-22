@@ -7,3 +7,18 @@
 [submodule "backend/xformers"]
 	path = backend/xformers
 	url = git@github.com:facebookresearch/xformers.git
+[submodule "backend/Chinese-LLaMA-Alpaca"]
+	path = backend/Chinese-LLaMA-Alpaca
+	url = git@github.com:ymcui/Chinese-LLaMA-Alpaca.git
+[submodule "backend/chineseModels/chinese-llama-lora-7b"]
+	path = backend/chineseModels/chinese-llama-lora-7b
+	url = https://huggingface.co/ziqingyang/chinese-llama-lora-7b
+[submodule "backend/chineseModels/chinese-llama-lora-13b"]
+	path = backend/chineseModels/chinese-llama-lora-13b
+	url = https://huggingface.co/ziqingyang/chinese-llama-lora-13b
+[submodule "backend/chineseModels/chinese-alpaca-lora-7b"]
+	path = backend/chineseModels/chinese-alpaca-lora-7b
+	url = https://huggingface.co/ziqingyang/chinese-alpaca-lora-7b
+[submodule "backend/chineseModels/chinese-alpaca-lora-13b"]
+	path = backend/chineseModels/chinese-alpaca-lora-13b
+	url = https://huggingface.co/ziqingyang/chinese-alpaca-lora-13b

@@ -3,3 +3,5 @@ venv
 .env.backend
 /LLaMa_Input
 /LLaMa_Output
+!LLaMa_Output/hf/.gitkeep
+!LLaMa_Output/full/.gitkeep
